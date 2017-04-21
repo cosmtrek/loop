@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/go-ini/ini"
 )
 
@@ -38,8 +39,11 @@ func NewEchoerOption(config *ini.File, app string) (*Option, error) {
 }
 
 // Execute ...
-func (c *Echoer) Execute() error {
+func (c *Echoer) Execute(msg *message.Message) error {
 	logrus.Debug("echoer.Execute")
+	if !msg.OK {
+		return msg.Err
+	}
 	fmt.Println(c.Text)
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/cosmtrek/loop/plugin/in/emitter"
 	"github.com/cosmtrek/loop/plugin/out/echoer"
 	"github.com/go-ini/ini"
@@ -21,13 +22,13 @@ var (
 
 // In implements in plugin
 type In interface {
-	Event(q *chan bool)
+	Event(q *chan *message.Message)
 	Name() string
 }
 
 // Out implements out plugin
 type Out interface {
-	Execute() error
+	Execute(msg *message.Message) error
 	Name() string
 }
 
@@ -103,7 +104,7 @@ type Pipe struct {
 	In   In
 	Out  Out
 	Name string
-	q    chan bool
+	msgQ chan *message.Message
 }
 
 // NewPipe returns pipe
@@ -124,7 +125,7 @@ func NewPipe(config *ini.File, app string, inout string) (*Pipe, error) {
 	pipe.In = in
 	pipe.Out = out
 	pipe.Name = inout
-	pipe.q = make(chan bool, 100)
+	pipe.msgQ = make(chan *message.Message, 10)
 	return pipe, nil
 }
 
@@ -135,11 +136,11 @@ func (p *Pipe) Run(wg *sync.WaitGroup) {
 		return
 	}
 
-	go p.In.Event(&p.q)
+	go p.In.Event(&p.msgQ)
 	for {
 		select {
-		case <-p.q:
-			if err := p.Out.Execute(); err != nil {
+		case msg := <-p.msgQ:
+			if err := p.Out.Execute(msg); err != nil {
 				logrus.Error(err)
 				break
 			}

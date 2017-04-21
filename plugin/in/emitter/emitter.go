@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/go-ini/ini"
 	"github.com/juju/errors"
 )
@@ -44,13 +45,13 @@ func NewEmitterOption(config *ini.File, app string) (*Option, error) {
 }
 
 // Event ...
-func (e *Emitter) Event(q *chan bool) {
+func (e *Emitter) Event(q *chan *message.Message) {
 	t := time.NewTicker(e.Interval)
 	for {
 		select {
 		case <-t.C:
 			logrus.Debug("emitter.Event")
-			*q <- true
+			*q <- message.NewMessage(true, "", nil)
 		}
 	}
 }
