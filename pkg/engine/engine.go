@@ -8,6 +8,7 @@ import (
 	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/cosmtrek/loop/plugin/in/emitter"
 	"github.com/cosmtrek/loop/plugin/in/fswatcher"
+	"github.com/cosmtrek/loop/plugin/out/commander"
 	"github.com/cosmtrek/loop/plugin/out/echoer"
 	"github.com/go-ini/ini"
 	"github.com/juju/errors"
@@ -19,7 +20,8 @@ var (
 )
 
 var (
-	echoerPlug = "echoer"
+	echoerPlug    = "echoer"
+	commanderPlug = "commander"
 )
 
 // In implements in plugin
@@ -97,7 +99,7 @@ func InPlugin(config *ini.File, app string, in string) (In, error) {
 func OutPlugin(config *ini.File, app string, out string) (Out, error) {
 	switch out {
 	case echoerPlug:
-		opt, err := echoer.NewEchoerOption(config, app)
+		opt, err := echoer.NewOption(config, app)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
@@ -106,6 +108,16 @@ func OutPlugin(config *ini.File, app string, out string) (Out, error) {
 			return nil, errors.Trace(err)
 		}
 		return echoer, nil
+	case commanderPlug:
+		opt, err := commander.NewOption(config, app)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		commander, err := commander.NewCommander(opt)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		return commander, nil
 	default:
 		return nil, errors.New("not known out plugin")
 	}
@@ -153,7 +165,7 @@ func (p *Pipe) Run(wg *sync.WaitGroup) {
 		select {
 		case msg := <-p.msgQ:
 			if err := p.Out.Execute(msg); err != nil {
-				logrus.Error(err)
+				logrus.Error(errors.ErrorStack(err))
 				break
 			}
 		}

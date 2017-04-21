@@ -31,8 +31,8 @@ func NewEchoer(opt *Option) (*Echoer, error) {
 	return c, nil
 }
 
-// NewEchoerOption returns echoer option
-func NewEchoerOption(config *ini.File, app string) (*Option, error) {
+// NewOption returns echoer option
+func NewOption(config *ini.File, app string) (*Option, error) {
 	opt := new(Option)
 	opt.Text = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("text").String()
 	return opt, nil
