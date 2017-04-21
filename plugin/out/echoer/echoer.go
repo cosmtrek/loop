@@ -44,7 +44,11 @@ func (c *Echoer) Execute(msg *message.Message) error {
 	if !msg.OK {
 		return msg.Err
 	}
-	fmt.Println(c.Text)
+	if c.Text == "-" {
+		logrus.Info(msg.Content)
+	} else {
+		logrus.Info(c.Text)
+	}
 	return nil
 }
 

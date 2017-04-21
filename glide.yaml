@@ -2,3 +2,8 @@ package: github.com/cosmtrek/loop
 import:
 - package: github.com/go-ini/ini
   version: ^1.27.0
+- package: golang.org/x/sys
+  subpackages:
+  - '...'
+- package: github.com/fsnotify/fsnotify
+  version: ^1.4.2

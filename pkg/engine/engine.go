@@ -7,13 +7,15 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/cosmtrek/loop/plugin/in/emitter"
+	"github.com/cosmtrek/loop/plugin/in/fswatcher"
 	"github.com/cosmtrek/loop/plugin/out/echoer"
 	"github.com/go-ini/ini"
 	"github.com/juju/errors"
 )
 
 var (
-	emitterPlug = "emitter"
+	emitterPlug   = "emitter"
+	fswatcherPlug = "fswatcher"
 )
 
 var (
@@ -76,6 +78,16 @@ func InPlugin(config *ini.File, app string, in string) (In, error) {
 			return nil, errors.Trace(err)
 		}
 		return emitter, nil
+	case fswatcherPlug:
+		opt, err := fswatcher.NewOption(config, app)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		fswatcher, err := fswatcher.NewFswatcher(opt)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		return fswatcher, nil
 	default:
 		return nil, errors.New("not known in plugin")
 	}

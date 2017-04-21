@@ -1,6 +1,17 @@
-hash: b24ff90778de327de970f6a22426b7655a98bf0fff87eb56e24ee79a0b357936
-updated: 2017-04-20T14:38:33.30726468+08:00
+hash: 730f4da582e3965a095888b875b5d5d0407eba24fb4cd706e78ff0c3f9976ffc
+updated: 2017-04-21T11:27:40.804438386+08:00
 imports:
+- name: github.com/fsnotify/fsnotify
+  version: 629574ca2a5df945712d3079857300b5e4da0236
 - name: github.com/go-ini/ini
   version: e7fea39b01aea8d5671f6858f0532f56e8bff3a5
+- name: github.com/juju/errors
+  version: 6f54ff6318409d31ff16261533ce2c8381a4fd5d
+- name: github.com/Sirupsen/logrus
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
+- name: golang.org/x/sys
+  version: afadfcc7779c1f4db0f6f6438afcb108d9c9c7cd
+  subpackages:
+  - '...'
+  - unix
 testImports: []

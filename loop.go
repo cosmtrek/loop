@@ -18,7 +18,8 @@ func main() {
 	eng := engine.NewEngine()
 	apps := strings.Split(cfg.Section("").Key("apps").String(), ",")
 	for _, app := range apps {
-		pipe, err := engine.NewPipe(cfg, app, cfg.Section(app).Key("pipe").String())
+		name := strings.TrimSpace(app)
+		pipe, err := engine.NewPipe(cfg, name, cfg.Section(name).Key("pipe").String())
 		if err != nil {
 			logrus.Error(errors.ErrorStack(err))
 			continue
