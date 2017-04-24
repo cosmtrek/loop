@@ -1,5 +1,5 @@
-hash: 730f4da582e3965a095888b875b5d5d0407eba24fb4cd706e78ff0c3f9976ffc
-updated: 2017-04-21T11:27:40.804438386+08:00
+hash: 0b016ab88c4445950ebab2f419890b870f2b929ec57a5e17643ccb170954c7fe
+updated: 2017-04-24T16:33:43.623379886+08:00
 imports:
 - name: github.com/fsnotify/fsnotify
   version: 629574ca2a5df945712d3079857300b5e4da0236
@@ -7,6 +7,8 @@ imports:
   version: e7fea39b01aea8d5671f6858f0532f56e8bff3a5
 - name: github.com/juju/errors
   version: 6f54ff6318409d31ff16261533ce2c8381a4fd5d
+- name: github.com/mailgun/mailgun-go
+  version: a4002e2df2e8ca2da6a6fbb4a72871b504e49f50
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: golang.org/x/sys

@@ -11,6 +11,7 @@ import (
 	"github.com/cosmtrek/loop/plugin/in/monitor"
 	"github.com/cosmtrek/loop/plugin/out/commander"
 	"github.com/cosmtrek/loop/plugin/out/echoer"
+	"github.com/cosmtrek/loop/plugin/out/emailer"
 	"github.com/go-ini/ini"
 	"github.com/juju/errors"
 )
@@ -24,6 +25,7 @@ var (
 var (
 	echoerPlug    = "echoer"
 	commanderPlug = "commander"
+	emailerPlug   = "emailer"
 )
 
 // In implements in plugin
@@ -130,6 +132,16 @@ func OutPlugin(config *ini.File, app string, out string) (Out, error) {
 			return nil, errors.Trace(err)
 		}
 		return commander, nil
+	case emailerPlug:
+		opt, err := emailer.NewOption(config, app)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		emailer, err := emailer.NewEmailer(opt)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		return emailer, nil
 	default:
 		return nil, errors.New("not known out plugin")
 	}
@@ -177,6 +189,10 @@ func NewPipe(config *ini.File, app string, inout string) (*Pipe, error) {
 func (p *Pipe) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 	if p == nil {
+		return
+	}
+	if !p.Enable {
+		logrus.Infof("App %s is disabled", p.Name)
 		return
 	}
 

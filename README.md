@@ -21,4 +21,4 @@ IN -> message channal -> OUT
 
 * echoer
 * commander
-* emailer(TODO)
+* emailer
