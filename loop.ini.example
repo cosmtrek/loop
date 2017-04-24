@@ -36,9 +36,10 @@ interval = 10s
 timeout = 2s
 
 [demo3_emailer]
-mailgun_domain = sandboxe655002513774e03bc939ac05c576101.mailgun.org
-mailgun_api_key = key-51e4511660c3c5a113a29a4443e6c5ca
-mailgun_public_api_key = pubkey-155ca2f38a56749fa8a2b17908e9885d
-mailgun_sender = cosmtrek@loop
-mailgun_receiver = cosmtrek@gmail.com
-mailgun_subject = demo3 is bad
+; use mailgun to send emails
+mailgun_domain =
+mailgun_api_key =
+mailgun_public_api_key =
+mailgun_sender =
+mailgun_receiver =
+mailgun_subject =
