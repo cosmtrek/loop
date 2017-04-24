@@ -41,11 +41,12 @@ func NewOption(config *ini.File, app string) (*Option, error) {
 // Execute ...
 func (c *Echoer) Execute(msg *message.Message) error {
 	logrus.Debug("echoer.Execute")
-	if !msg.OK {
-		return msg.Err
-	}
 	if c.Text == "-" {
-		logrus.Info(msg.Content)
+		if msg.OK {
+			logrus.Info(msg.Content)
+		} else {
+			logrus.Info(msg.Err)
+		}
 	} else {
 		logrus.Info(c.Text)
 	}

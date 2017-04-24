@@ -8,6 +8,7 @@ import (
 	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/cosmtrek/loop/plugin/in/emitter"
 	"github.com/cosmtrek/loop/plugin/in/fswatcher"
+	"github.com/cosmtrek/loop/plugin/in/monitor"
 	"github.com/cosmtrek/loop/plugin/out/commander"
 	"github.com/cosmtrek/loop/plugin/out/echoer"
 	"github.com/go-ini/ini"
@@ -17,6 +18,7 @@ import (
 var (
 	emitterPlug   = "emitter"
 	fswatcherPlug = "fswatcher"
+	monitorPlug   = "monitor"
 )
 
 var (
@@ -90,6 +92,16 @@ func InPlugin(config *ini.File, app string, in string) (In, error) {
 			return nil, errors.Trace(err)
 		}
 		return fswatcher, nil
+	case monitorPlug:
+		opt, err := monitor.NewOption(config, app)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		monitor, err := monitor.NewMonitor(opt)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		return monitor, nil
 	default:
 		return nil, errors.New("not known in plugin")
 	}
@@ -125,14 +137,18 @@ func OutPlugin(config *ini.File, app string, out string) (Out, error) {
 
 // Pipe is the flow
 type Pipe struct {
-	In   In
-	Out  Out
-	Name string
-	msgQ chan *message.Message
+	In     In
+	Out    Out
+	Name   string
+	Enable bool
+	msgQ   chan *message.Message
 }
 
 // NewPipe returns pipe
 func NewPipe(config *ini.File, app string, inout string) (*Pipe, error) {
+	if app == "" {
+		return nil, errors.New("empty app name")
+	}
 	if inout == "" {
 		return nil, errors.New("empty pipe")
 	}
@@ -148,8 +164,12 @@ func NewPipe(config *ini.File, app string, inout string) (*Pipe, error) {
 	pipe := new(Pipe)
 	pipe.In = in
 	pipe.Out = out
-	pipe.Name = inout
+	pipe.Name = app
 	pipe.msgQ = make(chan *message.Message, 10)
+	enable := config.Section(app).Key("enable").String()
+	if enable == "true" {
+		pipe.Enable = true
+	}
 	return pipe, nil
 }
 
