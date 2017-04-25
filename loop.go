@@ -1,6 +1,9 @@
 package main
 
 import (
+	"flag"
+	"os"
+	"runtime/debug"
 	"strings"
 
 	"github.com/Sirupsen/logrus"
@@ -9,9 +12,36 @@ import (
 	"github.com/juju/errors"
 )
 
+var (
+	debugMode bool
+	cfgfile   string
+	// BuildTimestamp ...
+	BuildTimestamp string
+	// Version ...
+	Version string
+)
+
+func init() {
+	flag.BoolVar(&debugMode, "D", false, "debug mode")
+	flag.StringVar(&cfgfile, "C", "./loop.ini", "config file")
+	flag.Parse()
+}
+
 func main() {
-	logrus.SetLevel(logrus.DebugLevel)
-	cfg, err := ini.Load("./loop.ini")
+	logrus.Infoln(`
+   __    ___  ___  ___
+  / /   /___\/___\/ _ \
+ / /   //  ///  // /_)/
+/ /___/ \_// \_// ___/
+\____/\___/\___/\/
+	`)
+	logrus.Infof("build timestamp: %s, version: %s", BuildTimestamp, Version)
+	flag.Parse()
+	if debugMode {
+		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Info("DEBUG!!!")
+	}
+	cfg, err := ini.Load(cfgfile)
 	if err != nil {
 		logrus.Error(err)
 	}
@@ -26,5 +56,13 @@ func main() {
 		}
 		eng.RegisterPipe(pipe)
 	}
+
+	defer func() {
+		if e := recover(); e != nil {
+			logrus.Error(e, debug.Stack())
+			os.Exit(1)
+		}
+	}()
+
 	eng.Run()
 }
