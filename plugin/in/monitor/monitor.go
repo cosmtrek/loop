@@ -19,6 +19,7 @@ var (
 // Monitor ...
 type Monitor struct {
 	name     string
+	app      string
 	Health   string
 	Interval time.Duration
 	Timeout  time.Duration
@@ -27,6 +28,7 @@ type Monitor struct {
 
 // Option for Monitor
 type Option struct {
+	App      string
 	Health   string
 	Interval time.Duration
 	Timeout  time.Duration
@@ -36,6 +38,7 @@ type Option struct {
 func NewMonitor(opt *Option) (*Monitor, error) {
 	m := new(Monitor)
 	m.name = name
+	m.app = opt.App
 	m.Health = opt.Health
 	m.Interval = opt.Interval
 	m.Timeout = opt.Timeout
@@ -48,13 +51,15 @@ func NewMonitor(opt *Option) (*Monitor, error) {
 // NewOption returns option
 func NewOption(config *ini.File, app string) (*Option, error) {
 	opt := new(Option)
-	opt.Health = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("health").String()
-	itv, err := time.ParseDuration(config.Section(fmt.Sprintf("%s_%s", app, name)).Key("interval").String())
+	opt.App = app
+	sec := config.Section(fmt.Sprintf("%s_%s", app, name))
+	opt.Health = sec.Key("health").String()
+	itv, err := time.ParseDuration(sec.Key("interval").String())
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 	opt.Interval = itv
-	to, err := time.ParseDuration(config.Section(fmt.Sprintf("%s_%s", app, name)).Key("timeout").String())
+	to, err := time.ParseDuration(sec.Key("timeout").String())
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -93,4 +98,9 @@ func (m *Monitor) Event(q *chan *message.Message) {
 // Name returns plugin name
 func (m *Monitor) Name() string {
 	return m.name
+}
+
+// App returns app name
+func (m *Monitor) App() string {
+	return m.app
 }

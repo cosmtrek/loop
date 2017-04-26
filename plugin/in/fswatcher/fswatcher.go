@@ -27,6 +27,7 @@ const (
 // Fswatcher ...
 type Fswatcher struct {
 	name    string
+	app     string
 	Dir     string
 	Ops     map[string]fsnotify.Op
 	Watcher *fsnotify.Watcher
@@ -36,6 +37,7 @@ type Fswatcher struct {
 func NewFswatcher(opt *Option) (*Fswatcher, error) {
 	w := new(Fswatcher)
 	w.name = name
+	w.app = opt.App
 	w.Dir = opt.Dir
 	w.Ops = opt.Ops
 	watcher, err := fsnotify.NewWatcher()
@@ -70,8 +72,14 @@ func (f *Fswatcher) Name() string {
 	return f.name
 }
 
+// App returns app name
+func (f *Fswatcher) App() string {
+	return f.app
+}
+
 // Option for fswatcher
 type Option struct {
+	App string
 	Dir string
 	Ops map[string]fsnotify.Op
 }
@@ -79,8 +87,10 @@ type Option struct {
 // NewOption returns option
 func NewOption(config *ini.File, app string) (*Option, error) {
 	opt := new(Option)
-	opt.Dir = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("dir").String()
-	events := config.Section(fmt.Sprintf("%s_%s", app, name)).Key("events").String()
+	opt.App = app
+	sec := config.Section(fmt.Sprintf("%s_%s", app, name))
+	opt.Dir = sec.Key("dir").String()
+	events := sec.Key("events").String()
 	if opt.Dir == "" {
 		return nil, errors.New("empty directory for watching")
 	}

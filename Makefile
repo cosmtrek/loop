@@ -17,6 +17,8 @@ check:
 release: check
 	@mkdir -p bin
 	GOOS=linux go build -ldflags '$(LDFLAGS)' -o bin/loop-linux
+	@chmod +x bin/loop-linux
 	GOOS=darwin go build -ldflags '$(LDFLAGS)' -o bin/loop-darwin
+	@chmod +x bin/loop-darwin
 
 ci: setup check

@@ -15,11 +15,13 @@ var (
 // Echoer prints text
 type Echoer struct {
 	name string
+	app  string
 	Text string
 }
 
 // Option for echoer
 type Option struct {
+	App  string
 	Text string
 }
 
@@ -27,6 +29,7 @@ type Option struct {
 func NewEchoer(opt *Option) (*Echoer, error) {
 	c := new(Echoer)
 	c.name = name
+	c.app = opt.App
 	c.Text = opt.Text
 	return c, nil
 }
@@ -34,6 +37,7 @@ func NewEchoer(opt *Option) (*Echoer, error) {
 // NewOption returns echoer option
 func NewOption(config *ini.File, app string) (*Option, error) {
 	opt := new(Option)
+	opt.App = app
 	opt.Text = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("text").String()
 	return opt, nil
 }
@@ -56,4 +60,9 @@ func (c *Echoer) Execute(msg *message.Message) error {
 // Name returns plugin name
 func (c *Echoer) Name() string {
 	return c.name
+}
+
+// App returns app name
+func (c *Echoer) App() string {
+	return c.app
 }

@@ -28,16 +28,22 @@ var (
 	emailerPlug   = "emailer"
 )
 
+// Plug implements common plugin methods
+type Plug interface {
+	Name() string
+	App() string
+}
+
 // In implements in plugin
 type In interface {
 	Event(q *chan *message.Message)
-	Name() string
+	Plug
 }
 
 // Out implements out plugin
 type Out interface {
 	Execute(msg *message.Message) error
-	Name() string
+	Plug
 }
 
 // Engine rules the world
@@ -192,9 +198,10 @@ func (p *Pipe) Run(wg *sync.WaitGroup) {
 		return
 	}
 	if !p.Enable {
-		logrus.Infof("App %s is disabled", p.Name)
+		logrus.Infof("[%s] OFF", p.Name)
 		return
 	}
+	logrus.Infof("[%s] ON", p.Name)
 
 	go p.In.Event(&p.msgQ)
 	for {

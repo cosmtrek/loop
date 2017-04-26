@@ -18,12 +18,14 @@ var (
 // Commander ...
 type Commander struct {
 	name string
+	app  string
 	Root string
 	Cmd  string
 }
 
 // Option for Commander
 type Option struct {
+	App  string
 	Root string
 	Cmd  string
 }
@@ -32,6 +34,7 @@ type Option struct {
 func NewCommander(opt *Option) (*Commander, error) {
 	c := new(Commander)
 	c.name = name
+	c.app = opt.App
 	c.Root = opt.Root
 	c.Cmd = opt.Cmd
 	return c, nil
@@ -40,8 +43,10 @@ func NewCommander(opt *Option) (*Commander, error) {
 // NewOption returns commander option
 func NewOption(config *ini.File, app string) (*Option, error) {
 	opt := new(Option)
-	opt.Root = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("root").String()
-	opt.Cmd = config.Section(fmt.Sprintf("%s_%s", app, name)).Key("cmd").String()
+	opt.App = app
+	sec := config.Section(fmt.Sprintf("%s_%s", app, name))
+	opt.Root = sec.Key("root").String()
+	opt.Cmd = sec.Key("cmd").String()
 	return opt, nil
 }
 
@@ -55,17 +60,23 @@ func (c *Commander) Execute(msg *message.Message) error {
 		return errors.Trace(msg.Err)
 	}
 	wd, _ := os.Getwd()
-	logrus.Debug(wd, c.Cmd)
-	cmd := exec.Command("/bin/sh", "-c", c.Cmd, msg.Content)
+	logrus.Debugf("[%s, %s] wd: %s", c.App(), c.Name(), wd)
+	cmd := exec.Command("/bin/sh", c.Cmd, msg.Content)
+	logrus.Debugf("[%s, %s] cmd: %v", c.App(), c.Name(), cmd.Args)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	logrus.Infof("commander.Execute, root: %s, cmd: %s, result: %s", c.Root, c.Cmd, string(out))
+	logrus.Infof("[%s] commander.Execute, root: %s, cmd: %v, result: %s", c.App(), c.Root, cmd.Args, string(out))
 	return nil
 }
 
 // Name returns plugin name
 func (c *Commander) Name() string {
 	return c.name
+}
+
+// App returns app name
+func (c *Commander) App() string {
+	return c.app
 }
