@@ -1,4 +1,4 @@
-LDFLAGS += -X "main.BuildTimestamp=$(shell date -u "+%Y-%m-%d %I:%M:%S")"
+LDFLAGS += -X "main.BuildTimestamp=$(shell date -u "+%Y-%m-%d %H:%M:%S")"
 LDFLAGS += -X "main.Version=$(shell git rev-parse HEAD)"
 
 setup:

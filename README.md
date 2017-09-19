@@ -15,6 +15,7 @@ IN -> message channal -> OUT
 * emitter
 * fswatcher
 * monitor
+* endpoint
 * webhook(TODO)
 
 ## OUT

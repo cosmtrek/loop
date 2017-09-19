@@ -7,6 +7,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/cosmtrek/loop/pkg/message"
 	"github.com/cosmtrek/loop/plugin/in/emitter"
+	"github.com/cosmtrek/loop/plugin/in/endpoint"
 	"github.com/cosmtrek/loop/plugin/in/fswatcher"
 	"github.com/cosmtrek/loop/plugin/in/monitor"
 	"github.com/cosmtrek/loop/plugin/out/commander"
@@ -20,6 +21,7 @@ var (
 	emitterPlug   = "emitter"
 	fswatcherPlug = "fswatcher"
 	monitorPlug   = "monitor"
+	endpointPlug  = "endpoint"
 )
 
 var (
@@ -110,6 +112,16 @@ func InPlugin(config *ini.File, app string, in string) (In, error) {
 			return nil, errors.Trace(err)
 		}
 		return monitor, nil
+	case endpointPlug:
+		opt, err := endpoint.NewOption(config, app)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		endpoint, err := endpoint.NewEndpoint(opt)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		return endpoint, nil
 	default:
 		return nil, errors.New("not known in plugin")
 	}

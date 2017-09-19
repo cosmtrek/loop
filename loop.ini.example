@@ -1,5 +1,5 @@
 # overview
-apps = demo, demo2, demo3
+apps = demo, demo2, demo3, demo4
 
 # demo
 [demo]
@@ -18,7 +18,7 @@ pipe = fswatcher, commander
 enable = false
 
 [demo2_fswatcher]
-dir = /Users/cosmtrek/Dropbox/Code/go/src/github.com/cosmtrek/loop/data/
+dir = /Users/cosmtrek/Code/go/src/github.com/cosmtrek/loop/data/
 events = create
 
 [demo2_commander]
@@ -28,7 +28,7 @@ cmd = ./job/dianxiao.sh
 # demo3
 [demo3]
 pipe = monitor, emailer
-enable = true
+enable = false
 
 [demo3_monitor]
 health = http://localhost:7777/status
@@ -43,3 +43,15 @@ mailgun_public_api_key =
 mailgun_sender =
 mailgun_receiver =
 mailgun_subject =
+
+# demo4
+[demo4]
+pipe = endpoint, echoer
+enable = true
+
+[demo4_endpoint]
+port = 9999
+route = /sync_saturn_task
+
+[demo4_echoer]
+text =
